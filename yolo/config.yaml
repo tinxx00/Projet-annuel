@@ -1,0 +1,6 @@
+train: C:/Users/tinhi/Downloads/yolo_dentai/images/train
+val: C:/Users/tinhi/Downloads/yolo_dentai/images/val
+test: C:/Users/tinhi/Downloads/yolo_dentai/images/test
+
+nc: 9
+names: ['Abcess', 'Badly Decayed', 'Caries', 'Crown', 'Normal', 'Overhang', 'Post', 'RCT', 'Restoration']
