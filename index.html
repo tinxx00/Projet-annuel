@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DentAI - Diagnostic Dentaire par IA</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet"/>
+  <script defer src="script.js"></script>
+</head>
+<body class="dark">
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="navbar-left">
+      <img src="https://i.imgur.com/WV5vDYH.png" alt="Logo DentAI" class="navbar-logo">
+      <span class="navbar-title">DentAI</span>
+    </div>
+    <nav class="navbar-right">
+      <ul>
+        <li><a href="#accueil">Accueil</a></li>
+        <li><a href="#apropos">À propos</a></li>
+        <li><a href="#analyse">Analyse</a></li>
+        <li><button id="theme-toggle" title="Changer le thème">🌓</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ACCUEIL -->
+  <section class="slide" id="accueil">
+    <div class="content">
+      <div class="badge">Bienvenue sur</div>
+      <h1>DentAI</h1>
+      <p><em>L'IA qui vous aide à diagnostiquer les pathologies dentaires en quelques secondes.</em></p>
+    </div>
+  </section>
+
+  <div class="section-separator"></div>
+
+  <!-- À PROPOS -->
+  <section class="slide" id="apropos">
+    <h2>À propos</h2>
+    <div class="about-right">
+      <p><strong>DentAI</strong> est une plateforme d’intelligence artificielle conçue pour assister les professionnels de santé dentaire dans l’analyse rapide et fiable des radiographies.</p>
+      <p>Grâce à des modèles IA entraînés sur des milliers d’images médicales, DentAI identifie automatiquement les anomalies les plus fréquentes : caries, abcès, couronnes, surplombs, etc.</p>
+      <p>Notre ambition est d’optimiser les diagnostics, réduire le temps d’analyse, et offrir aux praticiens un outil d’aide à la décision simple, performant et accessible.</p>
+    </div>
+  </section>
+
+  <div class="section-separator"></div>
+
+  <!-- ANALYSE -->
+  <section class="slide" id="analyse">
+    <h2>Analyse du patient</h2>
+    <form id="patient-form">
+      <div class="input-group">
+        <input type="text" id="nom" placeholder="Nom du patient..." />
+      </div>
+      <div class="input-group">
+        <input type="text" id="prenom" placeholder="Prénom du patient..." />
+      </div>
+      <div class="input-group">
+        <input type="number" id="age" placeholder="Âge du patient..." />
+      </div>
+      <p id="error-message" class="error-message"></p>
+      <button type="submit" class="next-button" title="Valider les informations">➡️</button>
+    </form>
+  </section>
+
+  <div class="section-separator"></div>
+
+  <!-- UPLOAD -->
+  <section class="slide" id="upload">
+    <h2>Étape 1 : Importer une radio</h2>
+    <div class="upload-box" onclick="document.getElementById('radio-upload').click()">
+      <span class="upload-icon">⬇️</span>
+      <p>Déposez ou sélectionnez une image de radio dentaire</p>
+      <input type="file" id="radio-upload" accept="image/*" hidden />
+    </div>
+    <div id="radio-preview"></div>
+    <p id="radio-error" class="error-message"></p>
+    <button onclick="validateRadioAndScroll()" class="next-button">➡️</button>
+  </section>
+
+  <div class="section-separator"></div>
+
+  <!-- MODÈLE -->
+  <section class="slide" id="choix-modele">
+    <h2>Étape 2 : Choisir un modèle IA</h2>
+    <div class="model-box">
+      <label for="model-select">Modèle :</label>
+      <select id="model-select">
+        <option value="">-- Sélectionner --</option>
+        <option value="model1">Modèle IA 1 (CNN)</option>
+        <option value="model2">Modèle IA 2 (YOLO)</option>
+      </select>
+      <p id="model-error" class="error-message"></p>
+    </div>
+    <!-- ✅ Bouton pour lancer l’analyse IA -->
+    <button onclick="sendToAPI()" class="next-button" title="Lancer l'analyse IA">🧠</button>
+  </section>
+
+  <div class="section-separator"></div>
+
+  <!-- RÉSULTATS -->
+  <section class="slide" id="resultats">
+    <h2>Résultat de l’analyse</h2>
+    <div class="resultats-container" id="resultats-api">
+      <!-- Résultats dynamiques ici -->
+    </div>
+  </section>
+
+  <div class="section-separator"></div>
+
+  <!-- CHATBOT -->
+  <section class="slide" id="chatbot">
+    <h2>Chatbot DentAI 🤖</h2>
+    <form id="chat-form">
+      <input type="text" id="chat-input" placeholder="Posez votre question dentaire ici..." />
+      <button type="submit">Envoyer</button>
+    </form>
+    <div id="chat-response" class="chat-box"></div>
+  </section>
+
+  <!-- BOUTON FLOTTANT -->
+  <button id="chatbot-float" title="Parler à DentAI">💬</button>
+
+</body>
+</html>
