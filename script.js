@@ -133,6 +133,9 @@ fetch(apiURL, {
       output = "🦷 Résultats YOLO :<ul>" + data.detections.map(
         d => `<li>${d.label} - ${d.confidence}</li>`
       ).join('') + "</ul>";
+      if (data.image_url) {
+        output += `<div><img src="/images/predicted_image.jpg" alt="Image annotée YOLO" style="max-width:100%;margin-top:10px;border:2px solid #333;"></div>`;
+      }
     }
 
     document.querySelector(".chat-box").innerHTML = output;
