@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 import tensorflow as tf
 import numpy as np
 from PIL import Image, UnidentifiedImageError
@@ -9,26 +10,30 @@ from ultralytics import YOLO
 
 app = FastAPI()
 
-# 📍 Dossier de base
+# 📁 Dossier pour les fichiers statiques
 BASE_DIR = os.path.dirname(__file__)
+ANNOTATED_DIR = os.path.join(BASE_DIR, "static", "annotated")
+os.makedirs(ANNOTATED_DIR, exist_ok=True)
 
-# 🧠 Chargement des modèles
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# 🔍 Modèles
 cnn_model_path = os.path.join(BASE_DIR, 'dentaI_model.h5')
 cnn_model = tf.keras.models.load_model(cnn_model_path, compile=False)
 
 yolo_model_path = os.path.join(BASE_DIR, 'best.pt')
 yolo_model = YOLO(yolo_model_path)
 
-# 🏷️ Classes du modèle CNN
-class_names = ['Abcess', 'Badly Decayed', 'Caries', 'Crown', 'Normal', 'Overhang', 'Post', 'RCT', 'Restoration']
+# 🔤 Classes CNN
+class_names = ['Abcess', 'Badly Decayed', 'Caries', 'Crown', 'Normal',
+               'Overhang', 'Post', 'RCT', 'Restoration']
 
-# 🧼 Prétraitement pour CNN
+# 🔧 Prétraitement CNN
 def preprocess_image(image: Image.Image) -> np.ndarray:
-    image = image.resize((128, 128))  # adapte à la taille d'entraînement
+    image = image.resize((128, 128))
     image = image.convert("RGB")
     image_array = np.array(image) / 255.0
-    image_array = np.expand_dims(image_array, axis=0)
-    return image_array
+    return np.expand_dims(image_array, axis=0)
 
 # 🧠 Endpoint CNN
 @app.post("/predict")
@@ -61,12 +66,16 @@ async def detect(file: UploadFile = File(...)):
         contents = await file.read()
         image = Image.open(io.BytesIO(contents)).convert("RGB")
 
-        results = yolo_model.predict(image)
+        # 📸 Sauvegarde de l'image brute
+        input_path = os.path.join(ANNOTATED_DIR, "input.jpg")
+        image.save(input_path)
+
+        # 🔍 Prédiction YOLO
+        results = yolo_model.predict(image, save=False)
 
         detections = []
         for result in results:
-            boxes = result.boxes
-            for box in boxes:
+            for box in result.boxes:
                 cls_id = int(box.cls[0])
                 conf = float(box.conf[0])
                 label = yolo_model.names[cls_id]
@@ -75,9 +84,16 @@ async def detect(file: UploadFile = File(...)):
                     "confidence": round(conf, 3)
                 })
 
+        # 🖼️ Sauvegarde image annotée
+        result = results[0]
+        annotated_image = Image.fromarray(result.plot())
+        output_path = os.path.join(ANNOTATED_DIR, "predicted_image.jpg")
+        annotated_image.save(output_path)
+
         return JSONResponse({
             "filename": file.filename,
-            "detections": detections
+            "detections": detections,
+            "image_url": "../api/static/annotated/predicted_image.jpg"
         })
 
     except Exception as e:
